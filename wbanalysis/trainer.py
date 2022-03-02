@@ -6,7 +6,8 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import precision_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import RobustScaler
-
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
 import joblib
 from termcolor import colored
 from app import imputer, onehotencode
@@ -23,14 +24,45 @@ class Trainer(object):
         self.y = y
         self.knn_model = None
 
-    def build_model(self):
-        """ defines our model as a class asttribute"""
-        model =  KNeighborsClassifier(n_neighbors=10)
-        return model
+    def set_pipeline(self):
+        scaler_pipe = Pipeline([
+            ('scaler', RobustScaler())
+        ])
+        preproc_pipe = ColumnTransformer([
+            ('num', scaler_pipe, [
+                "calendarYear",
+                "GPM",
+                "A (SGA)",
+                "B (RD)",
+                "C (PPE)",
+                "D (DEPR)",
+                "E (CAPEX)",
+                "F (NR)",
+                "currentRatio",
+                "G (ROA)",
+                "H (LD/GP)",
+                "debtToEquity",
+                "Net Issuance",
+                "Interest - income"
+            ]),
+        ])
+        self.knn_model = Pipeline([
+            ('preproc', preproc_pipe),
+            ('knn',  KNeighborsClassifier(n_neighbors=10))
+        ])
 
     def run(self):
-        self.knn_model = self.build_model()
-        self.knn_model.fit(self.X,self.y)
+        self.set_pipeline()
+        self.knn_model.fit(self.X, self.y)
+
+    # def build_model(self):
+    #     """ defines our model as a class asttribute"""
+    #     model =  KNeighborsClassifier(n_neighbors=10)
+    #     return model
+
+    # def run(self):
+    #     self.knn_model = self.build_model()
+    #     self.knn_model.fit(self.X,self.y)
 
     def evaluate(self, X_test, y_test):
         r2_test = self.knn_model.score(X_test, y_test)
