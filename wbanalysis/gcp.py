@@ -7,15 +7,27 @@ import joblib
 import os
 
 BUCKET_NAME = "wb-analysis"  # BUCKET NAME
-MODEL_NAME = "warren_buffett" #MODEL NAME
-STORAGE_LOCATION = 'model/warren_buffet/versions/' # STORAGE LOCATION
+BUCKET_TRAIN_DATA_PATH = 'data/CompanyData-Data.csv' #PATH
+
+# Load our data
+# def get_data_from_gcp(nrows=10000):
+#     path = f"gs://{BUCKET_NAME}/{BUCKET_TRAIN_DATA_PATH}"
+#     df = pd.read_csv(path, nrows=nrows)
+#     return df
 
 #upload our model.joblib to the GCP
-def upload_model_to_gcp(model_name):
-    client = storage.Client()
-    bucket = client.bucket(BUCKET_NAME)
-    blob = bucket.blob(STORAGE_LOCATION)
-    blob.upload_from_filename(model_name)
-    print('Success!')
+def storage_upload(bucket=BUCKET_NAME, rm=False):
+    client = storage.Client().bucket(bucket)
+
+    storage_location = '{}/{}'.format(
+        'models',
+        'model.joblib')
+    blob = client.blob(storage_location)
+    blob.upload_from_filename('model.joblib')
+    print(colored("=> model.joblib uploaded to bucket {} inside {}".format(BUCKET_NAME, storage_location),
+                  "green"))
+    if rm:
+        os.remove('model.joblib')
+
 if __name__ == '__main__':
-    upload_model_to_gcp('model.joblib')
+    pass
