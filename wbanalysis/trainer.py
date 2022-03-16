@@ -12,9 +12,11 @@ import joblib
 from termcolor import colored
 from app import imputer, onehotencode
 import pandas as pd
+from gcp import get_data_from_gcp
 
 # read our Dataframe until we load it into the GCP
-df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
+# df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
+df = get_data_from_gcp()
 
 class Trainer(object):
     def __init__(self, X, y):

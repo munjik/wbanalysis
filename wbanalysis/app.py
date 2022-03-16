@@ -21,9 +21,9 @@ from sklearn.preprocessing import OneHotEncoder
 from gcp import get_data_from_gcp
 
 
-df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
-
-# df = get_data_from_gcp(lines=True)
+# df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
+# get the data from gcp
+df = get_data_from_gcp()
 
 # impute our missing values to have no missing values
 def imputer(df):

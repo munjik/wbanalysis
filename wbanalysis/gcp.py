@@ -10,10 +10,10 @@ BUCKET_NAME = "wb-analysis"  # BUCKET NAME
 BUCKET_TRAIN_DATA_PATH = 'data/CompanyData-Data.csv' #PATH
 
 # Load our data
-# def get_data_from_gcp(nrows=10000):
-#     path = f"gs://{BUCKET_NAME}/{BUCKET_TRAIN_DATA_PATH}"
-#     df = pd.read_csv(path, nrows=nrows)
-#     return df
+def get_data_from_gcp(nrows=10000):
+    path = f"gs://{BUCKET_NAME}/{BUCKET_TRAIN_DATA_PATH}"
+    df = pd.read_csv(path, nrows=nrows)
+    return df
 
 #upload our model.joblib to the GCP
 def storage_upload(bucket=BUCKET_NAME, rm=False):
@@ -30,4 +30,6 @@ def storage_upload(bucket=BUCKET_NAME, rm=False):
         os.remove('model.joblib')
 
 if __name__ == '__main__':
+    # df = get_data_from_gcp()
+    # print(df)
     pass
