@@ -14,7 +14,7 @@ from app import imputer, onehotencode
 import pandas as pd
 
 # read our Dataframe until we load it into the GCP
-df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/Company Data - Data.csv')
+df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
 
 class Trainer(object):
     def __init__(self, X, y):

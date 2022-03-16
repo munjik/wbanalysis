@@ -18,9 +18,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
+from gcp import get_data_from_gcp
 
-# Load our data
-df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/Company Data - Data.csv')
+
+df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
+
+# df = get_data_from_gcp(lines=True)
 
 # impute our missing values to have no missing values
 def imputer(df):
@@ -42,6 +45,7 @@ def onehotencode(df):
 
 if __name__ == '__main__':
     # print the dataframe head to see if it worked
-    dataframe = imputer(df)
-    one_hot_encoded_df = onehotencode(dataframe)
-    print(one_hot_encoded_df)
+    print(df)
+    # dataframe = imputer(df)
+    # one_hot_encoded_df = onehotencode(dataframe)
+    # print(one_hot_encoded_df)
