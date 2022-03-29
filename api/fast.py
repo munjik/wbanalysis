@@ -106,7 +106,49 @@ async def predict(symbol):
 
     N = IS + RS # Net issuance of stock. Look for a steady repurchase.
 
+    # D = Capex() value of E
+    # E = value of D
+    #F = netincome
+    #G = net recievables
+    #debt to equity = K
+    #Net issuance = N
+    #interest - income = M
+
+# New variable alignment according to training
+    # GPM = GP / TR
+    # A (SGA) = SGA / GP
+    # B (RD) = RD / GP
+    # C (PPE) = PPE / GP
+    # D (DEPR) = DE / GP
+    # E (CAPEX) = CE / NI
+    # F (NI) = NI / TR
+    # G (NR) = NR / NI
+    # H (currentRatio) = CA / CL
+    # I (ROA) = NI / TA
+    # J (LD) = LD / GP
+    # K (debtToEquity) =  (SD + LD) / ASE
+    # L (SD) = SD / LD
+    # M (IN) = IE / OI
+    # N (Net Issuance)  = IS + RS
+
+    #below is our raw data columns must match this!
+    """symbol,GPM,A (SGA),B (RD),C (PPE),D (DEPR),E (CAPEX),F (NI/TR),G (NR/NI),
+    H (currentRatio),I (ROA),J (LD/GP),K (debtToEquity),L (SD/LD),M (IN/OI),Dividend Yeild,
+    N (Net Issuance)"""
+
+    calendarYear = 2020
+    column_names = {
+        symbol: symbol,
+        calendarYear: calendarYear,
+        GPM: GPM,
+        "A (SGA)": A,
+        "B (RD)" : B,
+        "C (PPE)" : C,
+        "D (CAPEX)" : D,
+
+    }
     return RS
+
 
 
 
