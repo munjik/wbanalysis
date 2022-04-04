@@ -26,12 +26,12 @@ from gcp import get_data_from_gcp
 df = get_data_from_gcp()
 
 # impute our missing values to have no missing values
-def imputer(df):
-    imputer = SimpleImputer(strategy="mean") # Instanciate a SimpleImputer object with strategy of choice
-    imputer.fit(df[['currentRatio']]) # Call the "fit" method on the object
-    df['currentRatio'] = imputer.transform(df[['currentRatio']]) # Call the "transform" method on the object
-    print(imputer.statistics_ )# The mean is stored in the transformer's memory
-    return df
+# def imputer(df):
+#     imputer = SimpleImputer(strategy="mean") # Instanciate a SimpleImputer object with strategy of choice
+#     imputer.fit(df[['currentRatio']]) # Call the "fit" method on the object
+#     df['currentRatio'] = imputer.transform(df[['currentRatio']]) # Call the "transform" method on the object
+#     print(imputer.statistics_ )# The mean is stored in the transformer's memory
+#     return df
 
 def onehotencode(df):
     encoder = OneHotEncoder()
@@ -49,3 +49,7 @@ if __name__ == '__main__':
     # dataframe = imputer(df)
     # one_hot_encoded_df = onehotencode(dataframe)
     # print(one_hot_encoded_df)
+
+
+# symbol	GPM	A (SGA)	B (RD)	C (PPE)	D (DEPR)	E (CAPEX)	F (NI/TR)	G (NR/NI)	H (currentRatio)	I (ROA)	J (LD/GP)	K (debtToEquity)	L (SD/LD)	M (IN/OI)	Dividend Yeild	N (Net Issuance)	Buy =1 DontBuy = 0
+# symbol	GPM	A (SGA)	B (RD)	C (PPE)	D (DEPR)	E (CAPEX)	F (NI/TR)	G (NR/NI)	H (currentRatio)	I (ROA)	J (LD/GP)	K (debtToEquity)	L (SD/LD)	M (IN/OI)	Dividend Yeild	N (Net Issuance)	Buy =1 DontBuy = 0
