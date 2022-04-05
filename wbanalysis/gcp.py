@@ -7,7 +7,7 @@ import joblib
 import os
 
 BUCKET_NAME = "wb-analysis"  # BUCKET NAME
-BUCKET_TRAIN_DATA_PATH = 'data/CompanyData-Data.csv' #PATH
+BUCKET_TRAIN_DATA_PATH = 'data/CompanyData.csv' #PATH
 
 # Load our data
 def get_data_from_gcp(nrows=10000):

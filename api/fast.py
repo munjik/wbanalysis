@@ -124,27 +124,25 @@ async def predict(symbol):
     # N (Net Issuance)  = IS + RS
 
     #below is our raw data columns must match this!
-    calendarYear = 2020
     column_names = {
         symbol: symbol,
-        calendarYear: calendarYear,
         "GPM": GPM,
         "A (SGA)": A,
         "B (RD)" : B,
         "C (PPE)" : C,
-        "D (CAPEX)" : D,
+        "D (DEPR)" : D,
         "E (CAPEX)" : E,
-        "F (NI)": F,
-        "G (NR)": G,
+        "F (NI/TR)": F,
+        "G (NR/NI)": G,
         "H (currentRatio)" : H,
         "I (ROA)": I,
-        "J (LD) ": J,
+        "J (LD/GP)": J,
         "K (debtToEquity)" : K,
-        "L (SD)" : L,
-        "M (IN)": M,
+        "L (SD/LD)" : L,
+        "M (IN/OI)": M,
         "N (Net Issuance)" : N
     }
-    return RS
+    return column_names
 
 
 
