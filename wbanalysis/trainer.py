@@ -10,9 +10,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 import joblib
 from termcolor import colored
-from app import imputer, onehotencode
+from app import drop_columns
 import pandas as pd
 from gcp import get_data_from_gcp
+from wbanalysis.gcp import storage_upload
 
 # read our Dataframe until we load it into the GCP
 # df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
@@ -32,20 +33,21 @@ class Trainer(object):
         ])
         preproc_pipe = ColumnTransformer([
             ('num', scaler_pipe, [
-                "calendarYear",
                 "GPM",
                 "A (SGA)",
                 "B (RD)",
                 "C (PPE)",
                 "D (DEPR)",
                 "E (CAPEX)",
-                "F (NR)",
-                "currentRatio",
-                "G (ROA)",
-                "H (LD/GP)",
-                "debtToEquity",
-                "Net Issuance",
-                "Interest - income"
+                "F (NI/TR)",
+                "G (NR/NI)",
+                "H (currentRatio)",
+                "I (ROA)",
+                "J (LD/GP)",
+                "K (debtToEquity)",
+                "L (SD/LD)",
+                "M (IN/OI)",
+                "N (Net Issuance)"
             ]),
         ])
         self.knn_model = Pipeline([
@@ -79,19 +81,22 @@ class Trainer(object):
         # Precision
         print(precision_score(y_test, y_pred, average=None))
 
+        return r2_test
+
     def save_model(self):
         joblib.dump(self.knn_model, 'model.joblib')
         print(colored("model.joblib saved locally", "green"))
 
 if __name__ == "__main__":
-    clean_data = imputer(df)
-    final_df = onehotencode(clean_data)
+    df = drop_columns(df)
+    # final_df = onehotencode(clean_data)
     # features of X and create target y
-    X = final_df.drop(columns=['Buy =1'])
-    y = final_df['Buy =1']
+    X = df.drop(columns=['Purchase'])
+    y = df['Purchase']
     X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = .3, random_state=0)
     trainer = Trainer(X=X_train, y=y_train)
     trainer.run()
     score = trainer.evaluate(X_test, y_test)
-    # print(f"score: {score}")
-    trainer.save_model()
+    print(f"score: {score}")
+    saved_local = trainer.save_model()
+    model_to_gcp = storage_upload(saved_local)

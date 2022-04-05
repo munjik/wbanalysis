@@ -43,6 +43,9 @@ def onehotencode(df):
     final_df = final_df.drop(columns='symbol')
     return final_df
 
+def drop_columns(df):
+    df = df.drop(columns='Dividend Yeild')
+    return df
 if __name__ == '__main__':
     # print the dataframe head to see if it worked
     print(df)
