@@ -99,4 +99,4 @@ if __name__ == "__main__":
     score = trainer.evaluate(X_test, y_test)
     print(f"score: {score}")
     saved_local = trainer.save_model()
-    model_to_gcp = storage_upload(saved_local)
+    model_to_gcp = storage_upload()

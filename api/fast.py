@@ -6,6 +6,10 @@ import time
 import http3
 import pandas as pd
 import yahoo_fin.stock_info as yf
+import joblib
+
+
+from wbanalysis.gcp import get_joblib
 
 app = FastAPI()
 client = http3.AsyncClient()
@@ -106,7 +110,7 @@ async def predict(symbol):
 
     N = IS + RS # Net issuance of stock. Look for a steady repurchase.
 
-# New variable alignment according to training
+    # New variable alignment according to training
     # GPM = GP / TR
     # A (SGA) = SGA / GP
     # B (RD) = RD / GP
@@ -123,44 +127,31 @@ async def predict(symbol):
     # M (IN) = IE / OI
     # N (Net Issuance)  = IS + RS
 
-    #below is our raw data columns must match this!
-    column_names = {
-        symbol: symbol,
-        "GPM": GPM,
-        "A (SGA)": A,
-        "B (RD)" : B,
-        "C (PPE)" : C,
-        "D (DEPR)" : D,
-        "E (CAPEX)" : E,
-        "F (NI/TR)": F,
-        "G (NR/NI)": G,
-        "H (currentRatio)" : H,
-        "I (ROA)": I,
-        "J (LD/GP)": J,
-        "K (debtToEquity)" : K,
-        "L (SD/LD)" : L,
-        "M (IN/OI)": M,
-        "N (Net Issuance)" : N
+    # below is our raw data columns must match this!
+    data_x = {
+        f"{symbol}": [symbol],
+        "GPM": [GPM],
+        "A (SGA)": [A],
+        "B (RD)" : [B],
+        "C (PPE)" : [C],
+        "D (DEPR)" : [D],
+        "E (CAPEX)" : [E],
+        "F (NI/TR)": [F],
+        "G (NR/NI)": [G],
+        "H (currentRatio)" : [H],
+        "I (ROA)": [I],
+        "J (LD/GP)": [J],
+        "K (debtToEquity)" : [K],
+        "L (SD/LD)" : [L],
+        "M (IN/OI)": [M],
+        "N (Net Issuance)" : [N]
     }
-    return column_names
+    X = pd.DataFrame.from_dict(data_x)
+    # ⚠️ TODO: get model from GCP
 
+    pipeline = get_joblib()
+    pipeline = joblib.load('model.joblib')
 
-
-
-# # build X ⚠️ beware to the order of the parameters ⚠️
-#     X = pd.DataFrame(dict(
-#         key=[key],
-#         pickup_datetime=[formatted_pickup_datetime],
-#         pickup_longitude=[float(pickup_longitude)],
-#         pickup_latitude=[float(pickup_latitude)],
-#         dropoff_longitude=[float(dropoff_longitude)],
-#         dropoff_latitude=[float(dropoff_latitude)],
-#         passenger_count=[int(passenger_count)]))
-
-#     # ⚠️ TODO: get model from GCP
-
-#     # pipeline = get_model_from_gcp()
-#     pipeline = joblib.load('model.joblib')
-
-#     # make prediction
-#     results = pipeline.predict(X)
+    # make prediction
+    results = pipeline.predict(X)
+    return results
