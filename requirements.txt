@@ -24,6 +24,7 @@ s3fs
 fastapi
 uvicorn
 bottle
+yahoo_fin
 
 # utilities
 six>=1.14

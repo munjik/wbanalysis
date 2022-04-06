@@ -6,6 +6,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy import stats
 from matplotlib import pylab
+from termcolor import colored
 from pylab import *
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.pipeline import Pipeline
@@ -48,7 +49,11 @@ def drop_columns(df):
     return df
 if __name__ == '__main__':
     # print the dataframe head to see if it worked
+    df = drop_columns(df)
     print(df)
+    print(df.shape)
+    df.to_csv("/Users/lpereda/code/munjik/wbanalysis/wbanalysis/raw_data/CompanyData.csv")
+    print(colored('DataFrame to CSV Saved Locally', "green"))
     # dataframe = imputer(df)
     # one_hot_encoded_df = onehotencode(dataframe)
     # print(one_hot_encoded_df)
