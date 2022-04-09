@@ -7,6 +7,7 @@ import http3
 import pandas as pd
 import yahoo_fin.stock_info as yf
 import joblib
+from termcolor import colored
 
 
 from wbanalysis.gcp import get_joblib
@@ -15,9 +16,7 @@ app = FastAPI()
 client = http3.AsyncClient()
 base_url = 'https://yfapi.net/v11/finance/quoteSummary/'
 # api_key = 'apikey=CmVlEza5Un9eIBTyvq7zea5Yk6wcPszN9UEYsUvF'
-headers = {
-    'x-api-key': "CmVlEza5Un9eIBTyvq7zea5Yk6wcPszN9UEYsUvF"
-    }
+headers = {'x-api-key': "U5P5akR8h29XXuwmpMz5P2sV1tqbDHCT7AAbl8pr"}
 
 app.add_middleware(
     CORSMiddleware,
@@ -62,32 +61,117 @@ async def predict(symbol):
         5.) Create a prediction
         """
     # INCOME STATEMENT API
-    NI = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]['netIncome']['raw']
-    GP = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["grossProfit"]['raw']
-    SGA = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["sellingGeneralAdministrative"]['raw']
-    RD = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["researchDevelopment"]['raw']
-    TR = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["totalRevenue"]['raw']
-    IE = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["interestExpense"]['raw']
-    OE = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["totalOperatingExpenses"]['raw']
-    OI = GP - OE # Operating Income = Gross Profit - Operating Expense
+    try:
+        NI = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]['netIncome']['raw']
+    except:
+        NI = 0
+        print(colored("NI=0", "red"))
+
+    try:
+        GP = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["grossProfit"]['raw']
+    except:
+        GP = 0
+        print(colored("GP=0", "red"))
+
+    try:
+        SGA = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["sellingGeneralAdministrative"]['raw']
+    except:
+        SGA = 0
+        print(colored("SGA=0", "red"))
+
+    # API returns 0 NIKE does not report
+    try:
+        RD = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["researchDevelopment"]['raw']
+    except:
+        RD = 0
+        print(colored("RD=0", "red"))
+
+    try:
+        TR = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["totalRevenue"]['raw']
+    except:
+        TR = 0
+        print(colored("TR=0", "red"))
+
+    try:
+        IE = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["interestExpense"]['raw']
+    except:
+        IE = 0
+        print(colored("IE=0", "red"))
+
+    try:
+        OE = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]["totalOperatingExpenses"]['raw']
+    except:
+        OE = 0
+        print(colored("OE=0", "red"))
+
+    try:
+        OI = GP - OE # Operating Income = Gross Profit - Operating Expense
+    except:
+        OI = 0
+        print(colored("OI=0", "red"))
 
     # BALANCE SHEET API
-    NR = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["retainedEarnings"]['raw']
-    CA = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["totalCurrentAssets"]['raw']
-    CL = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["totalCurrentLiabilities"]['raw']
-    TA = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["totalAssets"]['raw']
-    SE = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["totalStockholderEquity"]['raw']
-    PPE = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["propertyPlantEquipment"]['raw']
-    SD = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][1]["shortLongTermDebt"]['raw']
-    LD = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][1]["longTermDebt"]['raw']
-    TS = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][1]["treasuryStock"]['raw']
-    CS = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][2]["cash"]['raw']
+    try:
+        NR = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["retainedEarnings"]['raw']
+    except:
+        NR = 0
+    try:
+        CA = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["totalCurrentAssets"]['raw']
+    except:
+        CA = 0
+    try:
+        CL = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["totalCurrentLiabilities"]['raw']
+    except:
+        CL = 0
+    try:
+        TA = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["totalAssets"]['raw']
+    except:
+        TA = 0
+    try:
+        SE = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["totalStockholderEquity"]['raw']
+    except:
+        SE = 0
+    try:
+        PPE = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][0]["propertyPlantEquipment"]['raw']
+    except:
+        PPE = 0
+    try:
+        SD = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][1]["shortLongTermDebt"]['raw']
+    except:
+        SD = 0
+    try:
+        LD = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][1]["longTermDebt"]['raw']
+    except:
+        LD = 0
+    try:
+        TS = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][1]["treasuryStock"]['raw']
+    except:
+        TS = 0
+    try:
+        CS = balance_sheet["quoteSummary"]['result'][0]['balanceSheetHistory']['balanceSheetStatements'][2]["cash"]['raw']
+    except:
+        CS = 0
 
     # CASHFLOW STATEMENT API
-    CE = abs(cashflow_statement["quoteSummary"]['result'][0]['cashflowStatementHistory']['cashflowStatements'][0]["capitalExpenditures"]['raw'])
-    DE = cashflow_statement["quoteSummary"]['result'][0]['cashflowStatementHistory']['cashflowStatements'][0]["depreciation"]['raw']
-    IS = cashflow_statement["quoteSummary"]['result'][0]['cashflowStatementHistory']['cashflowStatements'][0]["issuanceOfStock"]['raw']
-    RS = cashflow_statement["quoteSummary"]['result'][0]['cashflowStatementHistory']['cashflowStatements'][0]["repurchaseOfStock"]['raw']
+    try:
+        CE = abs(cashflow_statement["quoteSummary"]['result'][0]['cashflowStatementHistory']['cashflowStatements'][0]["capitalExpenditures"]['raw'])
+    except:
+        CE = 0
+
+    try:
+        DE = cashflow_statement["quoteSummary"]['result'][0]['cashflowStatementHistory']['cashflowStatements'][0]["depreciation"]['raw']
+    except:
+        DE = 0
+
+    try:
+        IS = cashflow_statement["quoteSummary"]['result'][0]['cashflowStatementHistory']['cashflowStatements'][0]["issuanceOfStock"]['raw']
+    except:
+        IS = 0
+
+    try:
+        RS = cashflow_statement["quoteSummary"]['result'][0]['cashflowStatementHistory']['cashflowStatements'][0]["repurchaseOfStock"]['raw']
+    except:
+        RS = 0
 
     # Profit and distribution
     GPM = GP / TR # Gross Profit Margin
@@ -148,10 +232,15 @@ async def predict(symbol):
     }
     X = pd.DataFrame.from_dict(data_x)
     # ⚠️ TODO: get model from GCP
-
+    print(X.head())
     pipeline = get_joblib()
     pipeline = joblib.load('model.joblib')
 
-    # make prediction
+    # # make prediction
     results = pipeline.predict(X)
-    return results
+
+    print(results[0])
+    print(type(results))
+    # return results
+    res = {"results": [results]}
+    return list(results)
