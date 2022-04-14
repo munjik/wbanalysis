@@ -2,7 +2,6 @@ from webbrowser import get
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import requests
-import time
 import http3
 import pandas as pd
 import yahoo_fin.stock_info as yf
@@ -16,7 +15,9 @@ app = FastAPI()
 client = http3.AsyncClient()
 base_url = 'https://yfapi.net/v11/finance/quoteSummary/'
 # api_key = 'apikey=CmVlEza5Un9eIBTyvq7zea5Yk6wcPszN9UEYsUvF'
-headers = {'x-api-key': "U5P5akR8h29XXuwmpMz5P2sV1tqbDHCT7AAbl8pr"}
+
+# TODO: Check docs on update of key
+headers = {'x-api-key': "XAzuJdkSZa5W9Jy26Yasp28s8yJoP91xaSmaaXaS"}
 
 app.add_middleware(
     CORSMiddleware,
@@ -60,6 +61,8 @@ async def predict(symbol):
         4.) Feed the joblib file with the newly dataframe
         5.) Create a prediction
         """
+
+    print(income_statement)
     # INCOME STATEMENT API
     try:
         NI = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]['netIncome']['raw']

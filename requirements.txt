@@ -24,10 +24,14 @@ s3fs
 fastapi
 uvicorn
 bottle
-yahoo_fin
+yfinance
+requests
+readline
 
 # utilities
 six>=1.14
 joblib
 memoized-property
 termcolor
+http3
+yahoo_fin

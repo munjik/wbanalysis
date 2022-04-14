@@ -8,6 +8,8 @@ import pandas as pd
 import joblib
 import os
 from wbanalysis.params import DESTINATION_MODEL
+# fix
+from wbanalysis.params import CREDENTIAL
 
 BUCKET_NAME = "wb-analysis"  # BUCKET NAME
 BUCKET_TRAIN_DATA_PATH = 'data/CompanyData.csv' #PATH
@@ -34,7 +36,7 @@ def storage_upload(bucket=BUCKET_NAME, rm=False):
         os.remove('model.joblib')
 
 def get_joblib():
-    client = storage.Client()
+    client = storage.Client(credentials=CREDENTIAL)
     bucket = client.bucket(BUCKET_NAME)
     blob = bucket.blob(f"models/model.joblib")
     blob.download_to_filename(f"{DESTINATION_MODEL}/model.joblib")
