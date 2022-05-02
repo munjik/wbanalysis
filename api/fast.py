@@ -2,21 +2,23 @@ from webbrowser import get
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import requests
-import time
 import http3
 import pandas as pd
 import yahoo_fin.stock_info as yf
 import joblib
+import json
 from termcolor import colored
 
-
+from wbanalysis.bq_storage import up_bq
 from wbanalysis.gcp import get_joblib
 
 app = FastAPI()
 client = http3.AsyncClient()
 base_url = 'https://yfapi.net/v11/finance/quoteSummary/'
 # api_key = 'apikey=CmVlEza5Un9eIBTyvq7zea5Yk6wcPszN9UEYsUvF'
-headers = {'x-api-key': "U5P5akR8h29XXuwmpMz5P2sV1tqbDHCT7AAbl8pr"}
+
+# TODO: Check docs on update of key
+headers = {'x-api-key': "D5OFTKfvpK4UtS2ql7Svx9dgM7GheFZF4siD6u6Q"}
 
 app.add_middleware(
     CORSMiddleware,
@@ -60,6 +62,8 @@ async def predict(symbol):
         4.) Feed the joblib file with the newly dataframe
         5.) Create a prediction
         """
+
+    print(income_statement)
     # INCOME STATEMENT API
     try:
         NI = income_statement["quoteSummary"]['result'][0]['incomeStatementHistory']['incomeStatementHistory'][0]['netIncome']['raw']
@@ -213,7 +217,7 @@ async def predict(symbol):
 
     # below is our raw data columns must match this!
     data_x = {
-        f"{symbol}": [symbol],
+        f"symbol": [symbol],
         "GPM": [GPM],
         "A (SGA)": [A],
         "B (RD)" : [B],
@@ -241,6 +245,35 @@ async def predict(symbol):
 
     print(results[0])
     print(type(results))
-    # return results
-    res = {"results": [results]}
-    return list(results)
+    # return results for viz
+    res = {
+        "results": results,
+        f"symbol": symbol,
+        "GPM": GPM,
+        "A_SGA": A,
+        "B_RD": B,
+        "C_PPE": C,
+        "D_DEPR": D,
+        "E_CAPEX": E,
+        "F_NI_TR": F,
+        "G_NR_NI": G,
+        "H_currentRatio": H,
+        "I_ROA": I,
+        "J_LD_GP": J,
+        "K_debtToEquity": K,
+        "L_SD_LD": L,
+        "M_IN_OI": M,
+        "N_NetIssuance": N
+    }
+
+
+
+    #TODO: Upload res to bq
+    print("Uploading to BQ")
+    df_up = pd.DataFrame(res)
+    print(type(df_up))
+    print(df_up.info())
+    up_bq(df_up)
+
+    app_json = json.dumps(results[0])
+    return app_json
