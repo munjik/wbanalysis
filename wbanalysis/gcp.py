@@ -7,9 +7,9 @@ from termcolor import colored
 import pandas as pd
 import joblib
 import os
-from wbanalysis.params import DESTINATION_MODEL
+from params import DESTINATION_MODEL
 # fix
-from wbanalysis.params import CREDENTIAL
+from params import CREDENTIAL
 
 BUCKET_NAME = "wb-analysis"  # BUCKET NAME
 BUCKET_TRAIN_DATA_PATH = 'data/CompanyData.csv' #PATH
