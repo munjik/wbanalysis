@@ -10,14 +10,17 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 import joblib
 from termcolor import colored
-from app import drop_columns
+#from app import drop_columns
 import pandas as pd
-from gcp import get_data_from_gcp
-from wbanalysis.gcp import storage_upload
+#from gcp import get_data_from_gcp
+#from wbanalysis.gcp import storage_upload
 
 # read our Dataframe until we load it into the GCP
-# df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
-df = get_data_from_gcp()
+#df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
+df = pd.read_csv('/Users/lpereda/code/munjik/wbanalysis/wbanalysis/raw_data/CompanyData.csv')
+
+
+#df = get_data_from_gcp()
 
 class Trainer(object):
     def __init__(self, X, y):
@@ -88,7 +91,8 @@ class Trainer(object):
         print(colored("model.joblib saved locally", "green"))
 
 if __name__ == "__main__":
-    df = drop_columns(df)
+    #df = drop_columns(df)
+    #df = df.drop(columns='Dividend Yeild')
     # final_df = onehotencode(clean_data)
     # features of X and create target y
     X = df.drop(columns=['Purchase'])
@@ -98,5 +102,5 @@ if __name__ == "__main__":
     trainer.run()
     score = trainer.evaluate(X_test, y_test)
     print(f"score: {score}")
-    saved_local = trainer.save_model()
-    model_to_gcp = storage_upload()
+    #saved_local = trainer.save_model()
+    #model_to_gcp = storage_upload()

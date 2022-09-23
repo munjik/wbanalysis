@@ -63,7 +63,7 @@ def up_bq(df):
         'name': 'N_NetIssuance',
         'type': 'int64'
     }]
-    if_exists_param = 'replace'
+    if_exists_param = 'append'
     # Save df to GBQ,
     #  https://pandas-gbq.readthedocs.io/en/latest/writing.html
     # change to if_exists=append when in production
