@@ -11,6 +11,7 @@ from params import DESTINATION_MODEL
 # fix
 from params import CREDENTIAL
 
+
 BUCKET_NAME = "wb-analysis"  # BUCKET NAME
 BUCKET_TRAIN_DATA_PATH = 'data/CompanyData.csv' #PATH
 
