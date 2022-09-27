@@ -1,3 +1,4 @@
+from cmath import nan
 from pickle import TRUE
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,16 +8,19 @@ import pandas as pd
 import joblib
 import json
 from termcolor import colored
-
+import numpy as np
 from wbanalysis.bq_storage import up_bq
 from wbanalysis.gcp import get_joblib
+from pandas.io.json import json_normalize
+
+
 
 app = FastAPI()
-client = http3.AsyncClient()
-base_url = 'https://yfapi.net/v11/finance/docs/'
+#client = http3.AsyncClient()
+
 
 # For printing
-DEBUG = TRUE
+DEBUG = False
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,11 +31,30 @@ app.add_middleware(
 )
 
 @app.get("/predict/{symbol}")
-async def predict(symbol):
-    pass
+def predict(symbol):
+
+    # Using model from GCP
+    pipeline = get_joblib()
+    pipeline = joblib.load('model.joblib')
+
+    # Getting data for symbol
+    X = data_model_feed(symbol)
+    #X = flatten_json(X)
+    print(X.values)
+    print(X.keys)
+    print(X.head(3))
+    print(type(X))
+
+    # prediction
+    results_pred = pipeline.predict(X.values)
+
+    # all data return input and output
+    res = pd.DataFrame({"input": X, "output":results_pred[0]}, index=[0])
+    print(json.dumps(res))
+    return json.dumps(res)
 
 @app.get("/data_model_feed/{symbol}")
-async def data_model_feed(symbol):
+def data_model_feed(symbol):
     '''
     Currently the reported quarters are:
         quarterly_balance_sheet -> 2021-09-25
@@ -57,7 +80,7 @@ async def data_model_feed(symbol):
         I = NI / TA # Return on Assets. Net earnings divided by total assets.
             KO 12%. Really high returns suggests the industry could be competitive due to a lower
             cost to market entry.
-\
+
         # Debt and Financing
         J = LD / GP # Number of years it would take company to pay off Long Term Debt
         ASE = TS + SE # The shareholder equity - financial engineering.
@@ -111,35 +134,36 @@ async def data_model_feed(symbol):
     N = ((ticker.quarterly_cashflow['2022-06-25']["Issuance Of Stock"])
             +(ticker.quarterly_cashflow['2022-06-25']["Repurchase Of Stock"]))
 
+
     df = pd.DataFrame(
-        {   "symbol":[ticker],
-            "GPM": [GPM],
-            "A (SGA)": [A],
-            "B (RD)" : [B],
-            "C (PPE)" : [C],
-            "D (DEPR)" : [D],
-            "E (CAPEX)" : [E],
-            "F (NI/TR)": [F],
-            "G (NR/NI)": [G],
-            "H (currentRatio)" : [H],
-            "I (ROA)": [I],
-            "J (LD/GP)": [J],
-            "K (debtToEquity)" : [K],
-            "L (SD/LD)" : [L],
-            "M (IN/OI)": [M],
-            "N (Net Issuance)" : [N]
-        })
+        {   "symbol":symbol,
+            "GPM": GPM,
+            "A (SGA)": A,
+            "B (RD)" : B,
+            "C (PPE)" : C,
+            "D (DEPR)" : D,
+            "E (CAPEX)" : E,
+            "F (NI/TR)": F,
+            "G (NR/NI)": G,
+            "H (currentRatio)" : H,
+            "I (ROA)": I,
+            "J (LD/GP)": J,
+            "K (debtToEquity)" : K,
+            "L (SD/LD)" : L,
+            "M (IN/OI)": M,
+            "N (Net Issuance)" : N
+        },index=[0])
+    df = df.fillna(0.0)
 
     if DEBUG: print(df)
-    #return json.dumps(df)
-    pass
+    return df
 
 
 #TODO: Specify quarter?
 @app.get("/current_model_stats/{symbol}")
-async def current_model_stats(symbol):
+def current_model_stats(symbol):
     pass
 
 @app.get("/raw_data_download")
-async def raw_data_download(* args):
+def raw_data_download(* args):
     pass

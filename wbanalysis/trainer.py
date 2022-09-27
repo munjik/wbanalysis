@@ -13,13 +13,10 @@ from termcolor import colored
 #from app import drop_columns
 import pandas as pd
 #from gcp import get_data_from_gcp
-#from wbanalysis.gcp import storage_upload
-
-# read our Dataframe until we load it into the GCP
-#df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
-df = pd.read_csv('/Users/lpereda/code/munjik/wbanalysis/wbanalysis/raw_data/CompanyData.csv')
+from wbanalysis.gcp import storage_upload
 
 
+#TODO: upload data file to GCP. Have a function to do this!
 #df = get_data_from_gcp()
 
 class Trainer(object):
@@ -36,40 +33,33 @@ class Trainer(object):
         ])
         preproc_pipe = ColumnTransformer([
             ('num', scaler_pipe, [
-                "GPM",
-                "A (SGA)",
-                "B (RD)",
-                "C (PPE)",
-                "D (DEPR)",
-                "E (CAPEX)",
-                "F (NI/TR)",
-                "G (NR/NI)",
-                "H (currentRatio)",
-                "I (ROA)",
-                "J (LD/GP)",
-                "K (debtToEquity)",
-                "L (SD/LD)",
-                "M (IN/OI)",
-                "N (Net Issuance)"
+                "GPM", "A (SGA)", "B (RD)", "C (PPE)", "D (DEPR)", "E (CAPEX)",
+                "F (NI/TR)", "G (NR/NI)", "H (currentRatio)", "I (ROA)",
+                "J (LD/GP)", "K (debtToEquity)", "L (SD/LD)", "M (IN/OI)",
+                "N (Net Issuance)", 'Dividend Yeild'
             ]),
         ])
         self.knn_model = Pipeline([
             ('preproc', preproc_pipe),
-            ('knn',  KNeighborsClassifier(n_neighbors=10))
+            ('knn',  KNeighborsClassifier(n_neighbors=5, weights='distance'
+                                            ,algorithm='brute'
+                                            ,leaf_size=44, p=1))
         ])
 
     def run(self):
         self.set_pipeline()
         self.knn_model.fit(self.X, self.y)
 
-    # def build_model(self):
-    #     """ defines our model as a class asttribute"""
-    #     model =  KNeighborsClassifier(n_neighbors=10)
-    #     return model
+    def build_model(self):
+        """ defines our model as a class asttribute"""
+        model =  KNeighborsClassifier(n_neighbors=5, weights='distance'
+                                            ,algorithm='brute'
+                                            ,leaf_size=44, p=1)
+        return model
 
-    # def run(self):
-    #     self.knn_model = self.build_model()
-    #     self.knn_model.fit(self.X,self.y)
+    def run(self):
+        self.knn_model = self.build_model()
+        self.knn_model.fit(self.X,self.y)
 
     def evaluate(self, X_test, y_test):
         r2_test = self.knn_model.score(X_test, y_test)
@@ -91,13 +81,29 @@ class Trainer(object):
         print(colored("model.joblib saved locally", "green"))
 
 if __name__ == "__main__":
-    #df = drop_columns(df)
-    #df = df.drop(columns='Dividend Yeild')
-    # final_df = onehotencode(clean_data)
+
+    # read our Dataframe until we load it into the GCP
+    #df = pd.read_csv('/Users/munjismac/code/munjik/wbanalysis/raw_data/CompanyData-Data.csv')
+    df = pd.read_csv('/Users/lpereda/code/munjik/wbanalysis/wbanalysis/raw_data/data_2.csv')
+    df.dropna(inplace=True)
+    df.rename(columns={'Buy =1 DontBuy = 0': 'Purchase'}, inplace=True)
+    df.drop(columns=['symbol'], inplace=True)
+    #print('all things have dropped')
+    #print(df.head(3))
+    #print(f'Before X --> {df.keys}')
     # features of X and create target y
     X = df.drop(columns=['Purchase'])
+    #print(f'After X --> {df.keys}')
+    #print(X.shape)
+    #print(X.keys())
+    #print(df['Purchase'].keys)
     y = df['Purchase']
-    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = .3, random_state=0)
+    #print(y.shape)
+    #print(y)
+    X_train, X_test, y_train, y_test = train_test_split(X,
+                                                        y,
+                                                        test_size=.4,
+                                                        random_state=1121218)
     trainer = Trainer(X=X_train, y=y_train)
     trainer.run()
     score = trainer.evaluate(X_test, y_test)
