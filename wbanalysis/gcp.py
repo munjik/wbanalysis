@@ -28,21 +28,21 @@ def storage_upload(bucket=BUCKET_NAME, rm=False):
 
     storage_location = '{}/{}'.format(
         'models',
-        'model.joblib')
+        'model_1.joblib')
     blob = client.blob(storage_location)
-    blob.upload_from_filename('model.joblib')
-    print(colored("=> model.joblib uploaded to bucket {} inside {}".format(BUCKET_NAME, storage_location),
+    blob.upload_from_filename('model_1.joblib')
+    print(colored("=> model_1.joblib uploaded to bucket {} inside {}".format(BUCKET_NAME, storage_location),
                   "green"))
     if rm:
-        os.remove('model.joblib')
+        os.remove('model_1.joblib')
 
 def get_joblib():
     client = storage.Client(credentials=CREDENTIAL)
     bucket = client.bucket(BUCKET_NAME)
-    blob = bucket.blob(f"models/model.joblib")
-    blob.download_to_filename(f"{DESTINATION_MODEL}/model.joblib")
+    blob = bucket.blob(f"models/model_1.joblib")
+    blob.download_to_filename(f"{DESTINATION_MODEL}/model_1.joblib")
     print(colored("Model downloaded succesfully", "green"))
-    model = joblib.load(f"{DESTINATION_MODEL}/model.joblib")
+    model = joblib.load(f"{DESTINATION_MODEL}/model_1.joblib")
     return model
 
 def upload_to_bq(df):

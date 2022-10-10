@@ -28,18 +28,18 @@ class Trainer(object):
         self.knn_model = None
 
     def set_pipeline(self):
-        scaler_pipe = Pipeline([
+        scaler_pipe = Pipeline(steps=[
             ('scaler', RobustScaler())
         ])
-        preproc_pipe = ColumnTransformer([
+        preproc_pipe = ColumnTransformer(transformers=[
             ('num', scaler_pipe, [
                 "GPM", "A (SGA)", "B (RD)", "C (PPE)", "D (DEPR)", "E (CAPEX)",
                 "F (NI/TR)", "G (NR/NI)", "H (currentRatio)", "I (ROA)",
                 "J (LD/GP)", "K (debtToEquity)", "L (SD/LD)", "M (IN/OI)",
-                "N (Net Issuance)", 'Dividend Yeild'
+                "N (Net Issuance)"
             ]),
         ])
-        self.knn_model = Pipeline([
+        self.knn_model = Pipeline(steps=[
             ('preproc', preproc_pipe),
             ('knn',  KNeighborsClassifier(n_neighbors=5, weights='distance'
                                             ,algorithm='brute'
@@ -57,9 +57,6 @@ class Trainer(object):
                                             ,leaf_size=44, p=1)
         return model
 
-    def run(self):
-        self.knn_model = self.build_model()
-        self.knn_model.fit(self.X,self.y)
 
     def evaluate(self, X_test, y_test):
         r2_test = self.knn_model.score(X_test, y_test)
@@ -74,11 +71,21 @@ class Trainer(object):
         # Precision
         print(precision_score(y_test, y_pred, average=None))
 
-        return r2_test
+        # Returning all metrics for display as a dictionary
+        evs = {
+            'r2_test': r2_test,
+            'y_pred': y_pred,
+            'Confusion Matrix': confusion_matrix(y_test, y_pred),
+            'Accuracy': accuracy_score(y_test, y_pred),
+            'Recall': recall_score(y_test, y_pred, average=None),
+            'Precision': precision_score(y_test, y_pred, average=None)
+        }
+
+        return evs
 
     def save_model(self):
-        joblib.dump(self.knn_model, 'model.joblib')
-        print(colored("model.joblib saved locally", "green"))
+        joblib.dump(self.knn_model, 'model_1.joblib')
+        print(colored("model_1.joblib saved locally", "green"))
 
 if __name__ == "__main__":
 
@@ -87,7 +94,7 @@ if __name__ == "__main__":
     df = pd.read_csv('/Users/lpereda/code/munjik/wbanalysis/wbanalysis/raw_data/data_2.csv')
     df.dropna(inplace=True)
     df.rename(columns={'Buy =1 DontBuy = 0': 'Purchase'}, inplace=True)
-    df.drop(columns=['symbol'], inplace=True)
+    df.drop(columns=['symbol', 'Dividend Yeild'], inplace=True)
     #print('all things have dropped')
     #print(df.head(3))
     #print(f'Before X --> {df.keys}')
@@ -102,11 +109,11 @@ if __name__ == "__main__":
     #print(y)
     X_train, X_test, y_train, y_test = train_test_split(X,
                                                         y,
-                                                        test_size=.4,
-                                                        random_state=1121218)
+                                                        test_size=.3,
+                                                        random_state=472317128)
     trainer = Trainer(X=X_train, y=y_train)
     trainer.run()
     score = trainer.evaluate(X_test, y_test)
     print(f"score: {score}")
-    #saved_local = trainer.save_model()
-    #model_to_gcp = storage_upload()
+    saved_local = trainer.save_model()
+    model_to_gcp = storage_upload()
